@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import { Cpu } from 'lucide-react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import Cleave from 'cleave.js/dist/cleave-react';
+import Cleave from 'cleave.js/react';
 
 const FORM_URL = "https://script.google.com/macros/s/AKfycbwgMSVSDhTbeJQI-HjagVyD8CUwvzENaddGyUIXUY2J4PS2CFwwyESaMBsvM3NPlods/exec";
 
@@ -206,6 +206,13 @@ export default function App() {
               {message}
             </p>
           )}
+                  <button
+            type="button"
+            onClick={generatePDF}
+            className="bg-white border border-sky-600 text-sky-700 hover:bg-sky-100 px-6 py-3 rounded-lg text-lg mt-4 w-full"
+          >
+            📥 Download My Responses
+          </button>
         </form>
       </div>
 
