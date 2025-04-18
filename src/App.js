@@ -91,6 +91,7 @@ export default function App() {
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
+  const questionKeys = questions.flatMap(section => section.items.map(q => q.name));
   const [progress, setProgress] = useState(0);
 
   const totalQuestions = questions.reduce((sum, section) => sum + section.items.length + 4, 0);
@@ -98,6 +99,15 @@ export default function App() {
   useEffect(() => {
     const answered = Object.values(formData).filter((val) => val && val !== '').length;
     setProgress(Math.min(100, Math.floor((answered / totalQuestions) * 100)));
+  }, [formData]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("ai-readiness-form");
+    if (saved) setFormData(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("ai-readiness-form", JSON.stringify(formData));
   }, [formData]);
 
   const handleChange = (e) => {
@@ -130,9 +140,11 @@ export default function App() {
     if (!formData.name) newErrors.name = true;
     if (!formData.email || !formData.email.includes('@')) newErrors.email = true;
     if (!formData.Organization) newErrors.Organization = true;
-    if (!formData.country) newErrors.country = true;
-    if (!formData.contact) newErrors.contact = true;
+        if (!formData.contact) newErrors.contact = true;
 
+    questionKeys.forEach((key) => {
+      if (!formData[key]) newErrors[key] = true;
+    });
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -140,7 +152,7 @@ export default function App() {
       return;
     }
 
-    const phoneNumber = parsePhoneNumberFromString(formData.contact || '', formData.country);
+    const phoneNumber = parsePhoneNumberFromString(formData.contact || '');
     if (!phoneNumber || !phoneNumber.isValid()) {
       setMessage("❗ Please enter a valid phone number in international format, e.g., +254... or +1...");
       return;
@@ -194,17 +206,37 @@ export default function App() {
             <h2 className="text-2xl font-semibold text-sky-700 mb-4">Your Contact Details</h2>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Full Name</label>
-              <input type="text" name="name" className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : ''}`} onChange={handleChange} required />
+              <input
+                type="text"
+                name="name"
+                className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : ''}`}
+                onChange={handleChange}
+                value={formData.name || ''}
+                required
+              />
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Email Address</label>
-              <input type="email" name="email" className={`w-full p-2 border rounded ${errors.email ? 'border-red-500' : ''}`} onChange={handleChange} required />
+              <input
+                type="email"
+                name="email"
+                className={`w-full p-2 border rounded ${errors.email ? 'border-red-500' : ''}`}
+                onChange={handleChange}
+                value={formData.email || ''}
+                required
+              />
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Organization</label>
-              <input type="text" name="Organization" className={`w-full p-2 border rounded ${errors.Organization ? 'border-red-500' : ''}`} onChange={handleChange} required />
+              <input
+                type="text"
+                name="Organization"
+                className={`w-full p-2 border rounded ${errors.Organization ? 'border-red-500' : ''}`}
+                onChange={handleChange}
+                value={formData.Organization || ''}
+                required
+              />
             </div>
-            
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Contact Number</label>
               <Cleave
@@ -217,6 +249,47 @@ export default function App() {
               />
             </div>
           </div>
+
+          {questions.map((section, sectionIdx) => (
+            <div key={sectionIdx} className="bg-white shadow-md rounded-lg p-6 mb-8">
+              <h2 className="text-2xl font-semibold text-sky-700 mb-4">{section.section}</h2>
+              {section.items.map((q, qIdx) => (
+                <div key={qIdx} className="mb-5">
+                  <p className="text-gray-800 font-medium mb-2">{q.text}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {q.options.map((option, optIdx) => {
+                      const isSelected = q.type === 'checkbox'
+                        ? formData[q.name]?.includes(option)
+                        : formData[q.name] === option;
+
+                      return (
+                        <label
+                          key={optIdx}
+                          className={`border rounded-lg py-2 px-4 text-center cursor-pointer transition-colors duration-200 ${
+                            isSelected
+                              ? 'bg-sky-600 text-white border-sky-600'
+                              : errors[q.name]
+                              ? 'border-red-500 bg-red-50'
+                              : 'bg-white text-gray-800 hover:bg-sky-100 border-gray-300'
+                          }`}
+                        >
+                          <input
+                            type={q.type === 'checkbox' ? 'checkbox' : 'radio'}
+                            name={q.name}
+                            value={option}
+                            className="hidden"
+                            onChange={handleChange}
+                            checked={isSelected}
+                          />
+                          {option}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
 
           <button
             type="submit"
