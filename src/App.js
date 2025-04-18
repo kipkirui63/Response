@@ -1,9 +1,10 @@
-// AI Readiness React App with Country Picker and Phone Formatting
+// AI Readiness React App with Country Picker, Phone Formatting, and Cleave Masking
 
 import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import { Cpu } from 'lucide-react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import Cleave from 'cleave.js/react';
 
 const FORM_URL = "https://script.google.com/macros/s/AKfycbwgMSVSDhTbeJQI-HjagVyD8CUwvzENaddGyUIXUY2J4PS2CFwwyESaMBsvM3NPlods/exec";
 
@@ -14,7 +15,6 @@ const countries = [
   { code: 'CA', name: 'Canada' },
   { code: 'GB', name: 'United Kingdom' },
   { code: 'IN', name: 'India' }
-  // Add more countries as needed
 ];
 
 const questions = [
@@ -26,7 +26,7 @@ export default function App() {
   const [message, setMessage] = useState('');
   const [progress, setProgress] = useState(0);
 
-  const totalQuestions = questions.reduce((sum, section) => sum + section.items.length + 4, 0); // +4 for name, email, org, country, contact
+  const totalQuestions = questions.reduce((sum, section) => sum + section.items.length + 4, 0);
 
   useEffect(() => {
     const answered = Object.values(formData).filter((val) => val && val !== '').length;
@@ -66,7 +66,7 @@ export default function App() {
 
     const phoneNumber = parsePhoneNumberFromString(formData.contact || '', formData.country);
     if (!phoneNumber || !phoneNumber.isValid()) {
-      setMessage("❗ Please enter a valid phone number.");
+      setMessage("❗ Please enter a valid phone number in international format, e.g., +254... or +1...");
       return;
     }
 
@@ -131,7 +131,6 @@ export default function App() {
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Country</label>
               <select name="country" className="w-full p-2 border rounded" onChange={handleChange} required>
-                <option value="">Select your country</option>
                 {countries.map((c) => (
                   <option key={c.code} value={c.code}>{c.name}</option>
                 ))}
@@ -139,7 +138,22 @@ export default function App() {
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Contact Number</label>
-              <input type="tel" name="contact" className="w-full p-2 border rounded" onChange={handleChange} required />
+              <Cleave
+                name="contact"
+                placeholder="e.g. +254712345678"
+                className="w-full p-2 border rounded"
+                value={formData.contact || ''}
+                options={{
+                  prefix: '+',
+                  phone: true,
+                  phoneRegionCode: formData.country || 'KE',
+                  delimiters: [],
+                  blocks: [15],
+                  numericOnly: true
+                }}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
 
