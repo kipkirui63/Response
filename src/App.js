@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import { Cpu } from 'lucide-react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import Cleave from 'cleave.js/react';
+import Cleave from 'cleave.js';
 
 const FORM_URL = "https://script.google.com/macros/s/AKfycbwgMSVSDhTbeJQI-HjagVyD8CUwvzENaddGyUIXUY2J4PS2CFwwyESaMBsvM3NPlods/exec";
 
@@ -145,8 +145,7 @@ export default function App() {
                 value={formData.contact || ''}
                 options={{
                   prefix: '+',
-                  phone: true,
-                  phoneRegionCode: formData.country || 'KE',
+                  prefix: '+', blocks: [15], delimiters: [' '], numericOnly: true,
                   delimiters: [],
                   blocks: [15],
                   numericOnly: true
