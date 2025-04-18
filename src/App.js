@@ -1,29 +1,96 @@
-// AI Readiness React App with Country Picker, Phone Formatting, and Cleave Masking
+// AI Readiness React App with Country Picker, Phone Formatting, and Cleave Masking + Validation
 
 import React, { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import { Cpu } from 'lucide-react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import Cleave from 'cleave.js';
+import Cleave from 'cleave.js/react';
 
 const FORM_URL = "https://script.google.com/macros/s/AKfycbwgMSVSDhTbeJQI-HjagVyD8CUwvzENaddGyUIXUY2J4PS2CFwwyESaMBsvM3NPlods/exec";
 
-const countries = [
-  { code: 'KE', name: 'Kenya' },
-  { code: 'NG', name: 'Nigeria' },
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'IN', name: 'India' }
-];
-
 const questions = [
-  // same questions object
+  {
+    section: 'Use Cases',
+    items: [
+      {
+        name: 'q1',
+        text: 'What is the main reason you’re considering AI in your organization?',
+        options: ['Efficiency', 'Costs', 'Decision-making', 'Customer experience', 'Not sure']
+      },
+      {
+        name: 'q2',
+        text: 'Do you already have areas or problems in mind where AI could help?',
+        options: ['Yes', 'Somewhat', 'No']
+      }
+    ]
+  },
+  {
+    section: 'Data Readiness',
+    items: [
+      {
+        name: 'q3',
+        text: 'How is your organization’s data currently stored?',
+        options: ['Digital', 'Mixed', 'Paper', 'Not sure']
+      },
+      {
+        name: 'q4',
+        text: 'Do you have enough data available for AI to work with?',
+        options: ['Yes', 'Partially', 'No', 'Not sure']
+      },
+      {
+        name: 'q5',
+        text: 'Do you have data security or privacy measures in place?',
+        options: ['Yes', 'Partially', 'No', 'Not sure']
+      }
+    ]
+  },
+  {
+    section: 'Technical Infrastructure',
+    items: [
+      {
+        name: 'q6',
+        text: 'Which tools or platforms do you currently use to manage operations?',
+        options: ['Microsoft 365 / Google Workspace', 'CRM', 'ERP', 'None', 'Other'],
+        type: 'checkbox'
+      },
+      {
+        name: 'q7',
+        text: 'Can your current systems support AI tools or integrations?',
+        options: ['Yes', 'Somewhat', 'No', 'Not sure']
+      }
+    ]
+  },
+  {
+    section: 'Team Readiness',
+    items: [
+      {
+        name: 'q8',
+        text: 'Does your team have technical expertise or experience with automation?',
+        options: ['Yes', 'Partially', 'No']
+      },
+      {
+        name: 'q9',
+        text: 'Is there leadership support for AI initiatives in your organization?',
+        options: ['Yes', 'Partially', 'No', 'Not sure']
+      },
+      {
+        name: 'q10',
+        text: 'Are there resources (time, budget, staff) already allocated to AI projects?',
+        options: ['Yes', 'In progress', 'No', 'Not sure']
+      },
+      {
+        name: 'q11',
+        text: 'Is there any training program or plan to support AI-related skills?',
+        options: ['Yes', 'In development', 'No']
+      }
+    ]
+  }
 ];
 
 export default function App() {
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState({});
   const [progress, setProgress] = useState(0);
 
   const totalQuestions = questions.reduce((sum, section) => sum + section.items.length + 4, 0);
@@ -59,8 +126,17 @@ export default function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.email.includes('@')) {
-      setMessage("❗ Please enter a valid email address.");
+    const newErrors = {};
+    if (!formData.name) newErrors.name = true;
+    if (!formData.email || !formData.email.includes('@')) newErrors.email = true;
+    if (!formData.Organization) newErrors.Organization = true;
+    if (!formData.country) newErrors.country = true;
+    if (!formData.contact) newErrors.contact = true;
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      setMessage("❗ Please fill out all required fields correctly.");
       return;
     }
 
@@ -118,80 +194,29 @@ export default function App() {
             <h2 className="text-2xl font-semibold text-sky-700 mb-4">Your Contact Details</h2>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Full Name</label>
-              <input type="text" name="name" className="w-full p-2 border rounded" onChange={handleChange} required />
+              <input type="text" name="name" className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : ''}`} onChange={handleChange} required />
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Email Address</label>
-              <input type="email" name="email" className="w-full p-2 border rounded" onChange={handleChange} required />
+              <input type="email" name="email" className={`w-full p-2 border rounded ${errors.email ? 'border-red-500' : ''}`} onChange={handleChange} required />
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Organization</label>
-              <input type="text" name="Organization" className="w-full p-2 border rounded" onChange={handleChange} required />
+              <input type="text" name="Organization" className={`w-full p-2 border rounded ${errors.Organization ? 'border-red-500' : ''}`} onChange={handleChange} required />
             </div>
-            <div className="mb-4">
-              <label className="block mb-2 text-gray-700 font-medium">Country</label>
-              <select name="country" className="w-full p-2 border rounded" onChange={handleChange} required>
-                {countries.map((c) => (
-                  <option key={c.code} value={c.code}>{c.name}</option>
-                ))}
-              </select>
-            </div>
+            
             <div className="mb-4">
               <label className="block mb-2 text-gray-700 font-medium">Contact Number</label>
               <Cleave
                 name="contact"
-                placeholder="e.g. +254712345678"
-                className="w-full p-2 border rounded"
+                className={`w-full p-2 border rounded ${errors.contact ? 'border-red-500' : ''}`}
                 value={formData.contact || ''}
-                options={{
-                  prefix: '+',
-                  prefix: '+', blocks: [15], delimiters: [' '], numericOnly: true,
-                  delimiters: [],
-                  blocks: [15],
-                  numericOnly: true
-                }}
+                options={{ prefix: '+', blocks: [15], numericOnly: true }}
                 onChange={handleChange}
                 required
               />
             </div>
           </div>
-
-          {questions.map((section, sIdx) => (
-            <div key={sIdx} className="bg-white shadow-md rounded-lg p-6 mb-8">
-              <h2 className="text-2xl font-semibold text-sky-700 mb-4">{section.section}</h2>
-              {section.items.map((q, qIdx) => (
-                <div key={qIdx} className="mb-5">
-                  <p className="text-gray-800 font-medium mb-2">{q.text}</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {q.options.map((option, i) => {
-                      const isSelected = q.type === 'checkbox'
-                        ? formData[q.name]?.includes(option)
-                        : formData[q.name] === option;
-
-                      return (
-                        <label
-                          key={i}
-                          className={`border rounded-lg py-2 px-4 text-center cursor-pointer transition-colors duration-200 ${
-                            isSelected ? 'bg-sky-600 text-white border-sky-600' : 'bg-white text-gray-800 hover:bg-sky-100 border-gray-300'
-                          }`}
-                        >
-                          <input
-                            type={q.type === 'checkbox' ? 'checkbox' : 'radio'}
-                            name={q.name}
-                            value={option}
-                            className="hidden"
-                            onChange={handleChange}
-                            checked={isSelected}
-                          />
-                          {option}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
 
           <button
             type="submit"
@@ -205,7 +230,8 @@ export default function App() {
               {message}
             </p>
           )}
-                  <button
+
+          <button
             type="button"
             onClick={generatePDF}
             className="bg-white border border-sky-600 text-sky-700 hover:bg-sky-100 px-6 py-3 rounded-lg text-lg mt-4 w-full"
