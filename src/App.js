@@ -149,6 +149,9 @@ export default function App() {
 
     if (Object.keys(newErrors).length > 0) {
       setMessage("❗ Please fill out all required fields correctly.");
+      const firstErrorKey = Object.keys(newErrors)[0];
+      const firstEl = document.querySelector(`[name="${firstErrorKey}"]`);
+      if (firstEl) firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
