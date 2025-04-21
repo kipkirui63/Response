@@ -1,71 +1,116 @@
-# Getting Started with Create React App
+Here's a detailed README file you can use for your React-based **AI Readiness Assessment Form** project:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+# 🧠 AI Readiness Assessment Form
 
-In the project directory, you can run:
+This is a sleek and interactive React application that helps organizations evaluate their AI readiness across multiple dimensions such as **Use Cases**, **Data Readiness**, **Technical Infrastructure**, and **Team Readiness**. It collects user responses, validates them, generates a downloadable PDF, and submits the data to a Google Sheets backend via Google Apps Script.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Beautiful and responsive UI built with **Tailwind CSS**
+- Modular question format organized by sections
+- **Real-time progress bar** based on form completion
+- **Input validation** and visual error highlighting
+- **Phone number formatting and validation** using `libphonenumber-js` and `cleave.js`
+- PDF export of responses using `jsPDF`
+- Submission to Google Sheets via **Google Apps Script**
+- Local storage auto-save functionality
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Technologies Used
 
-### `npm run build`
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [jsPDF](https://github.com/parallax/jsPDF)
+- [libphonenumber-js](https://github.com/catamphetamine/libphonenumber-js)
+- [cleave.js](https://nosir.github.io/cleave.js/)
+- [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📁 Project Structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+.
+├── public/
+│   └── index.html
+├── src/
+│   ├── App.js      # Main app component
+│   ├── index.js    # React entry point
+├── tailwind.config.js
+├── postcss.config.js
+├── package.json
+└── README.md
+```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🧩 How It Works
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. **User fills out their contact details and questionnaire.**
+2. **Form state is saved to `localStorage`** so progress is not lost on refresh.
+3. **Progress bar updates** in real-time as fields are completed.
+4. On submit:
+   - Form is **validated**.
+   - **Phone number is parsed and validated**.
+   - Data is **sent to a Google Apps Script URL** (`FORM_URL`).
+   - A **PDF file** of responses is generated and downloaded.
+5. A **confirmation message** is shown to the user.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🔗 Deployment Instructions
 
-## Learn More
+1. **Clone the repository:**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/your-username/ai-readiness-assessment.git
+cd ai-readiness-assessment
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. **Install dependencies:**
 
-### Code Splitting
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. **Run the app:**
 
-### Analyzing the Bundle Size
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. **Build for production:**
 
-### Making a Progressive Web App
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 🔌 Google Sheets Integration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- A **Google Apps Script Web App** is used to receive form submissions and store them in Google Sheets.
+- You can create your own [Apps Script Web App](https://developers.google.com/apps-script/guides/web) and update the `FORM_URL` accordingly.
+- The script should accept a POST request and parse `application/x-www-form-urlencoded` data.
 
-### Deployment
+## 🙌 Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Pull requests and feedback are welcome! If you’d like to improve UI/UX, add features, or fix bugs, feel free to fork and submit a PR.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Response
+## 📧 Contact
+
+- **Team:** Crisp AI  
+- **Email:** [contact@crispai.org](mailto:contact@crispai.org)
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
